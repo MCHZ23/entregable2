@@ -1,88 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import WeatherApp from './components/WeatherApp';
+import { useEffect, useState } from 'react';
 import './App.css';
+import Icons from './components/Icons'
 
-const App = () => {
-  const [weatherData, setWeatherData] = useState(null);
-  const [temperatureUnit, setTemperatureUnit] = useState('Celsius');
-  const [isLoading, setIsLoading] = useState(true);
-  const [city, setCity] = useState('');
 
-  useEffect(() => {
-    const getLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(getWeatherData);
-      } else {
-        console.log('Geolocation is not supported by this browser.');
-      }
-    };
+const api = { 
+  key:"c5f590d57553377e83cc179157aa83f6",
+  base: "https://api.openweathermap.org/data/2.5/"
+}
 
-    const getWeatherData = async (position) => {
-      const { latitude, longitude } = position.coords;
-      const apiKey = 'c5f590d57553377e83cc179157aa83f6';
-      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
+function App() {
+  const [search, setSearch] = useState('roma')
+  const [values, setValues] = useState({
 
-      try {
-        const response = await axios.get(apiUrl);
-        const data = response.data;
-        setWeatherData(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.log('Error fetching weather data:', error);
-      }
-    };
+  name: '',
+  main: {
+    temp: 0,
+    temp_min: 0,
+    temp_max: 0,
+  },
+  weather: [{ main: '', description: '' }],
+  sys: {
+    country: '',
+  },
+  });
+  const [icon, setIcon] = useState('')
 
-    getLocation();
-  }, []);
-
-  const handleToggleUnit = () => {
-    setTemperatureUnit((prevUnit) => (prevUnit === 'Celsius' ? 'Fahrenheit' : 'Celsius'));
+  const searchPressed = () => {
+    getData();
   };
 
-  const handleSearch = async () => {
-    if (city.trim() !== '') {
-      const apiKey = 'c5f590d57553377e83cc179157aa83f6';
-      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+  const [ darkMode, setDarkMode] = useState(false)
 
-      try {
-        const response = await axios.get(apiUrl);
-        const data = response.data;
-        setWeatherData(data);
-      } catch (error) {
-        console.log('Error fetching weather data:', error);
-      }
+  function toggleDarkMode(){ 
+    setDarkMode(!darkMode);
+   }
+   if (darkMode){ 
+    document.body.classList.add('dark-mode');
+   } else { 
+    document.body.classList.remove('dark-mode')
+   }
+   function handleKeyDown(event){ 
+    if (event.key === "Enter") { searchPressed();
     }
-  };
+   } 
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  
+
+  const getData = async () => {
+    const URL = `${api.base}weather?q=${search}&units=metric&appid=${api.key}`;
+
+    await fetch(URL)
+      .then(response => response.json())
+      .then( data => {
+        if(data.cod >= 400) {
+          setValues(false)
+        }else{         
+          setIcon(data.weather[0].main)
+          setValues(data)
+        }        
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
+  const handleSearch = (e) => {
+    if(e.key === 'Enter'){      
+      setSearch(e.target.value)
+    }
+  }
+  useEffect(()=>{
+    getData()
+  },[search]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
+    <>
+    <div className="container">
+    <div className={`container${darkMode ? "dark-mode" : ""}`}>
+     
+     <label className="switch">
+      <input
+        type="checkbox"
+        checked={darkMode}
+        onChange={toggleDarkMode}
+      />
+      <span className="slider-round"></span>
+    </label>
     
-
-    <div>
-
-     <h1 className="h1">Weather App</h1>
-    
-    <div>
-    <input type="text" id="cityInput" value={city} onChange={(e) => setCity(e.target.value)} />
-
-    
-    </div>
-      <div className="container">
-      
-        <div>
-          <label htmlFor="cityInput">City:</label>
-          
-          <button onClick={handleSearch}>Search</button>
-          
-        </div>
-        <WeatherApp weatherData={weatherData} temperatureUnit={temperatureUnit} />
+      <h2>React Weather App</h2>
+      <div className='row'>
+        <input 
+          onKeyDown={handleSearch}
+          type="text"          
+          autoFocus
+        />
+        <button  className='touchpad'  onClick={ searchPressed}> <i className='bx bx-search-alt-2' ></i></button> 
       </div>
     </div>
-  );
-};
 
-export default App;
+    <div className='card'>
+      {(values.name) ? (
+        <div className='card-container'>
+          <h1 className='city-name'>{values.name}, {values.sys.country}</h1>
+          <p className='temp'>{values.main.temp.toFixed(0)}&deg;</p>
+          <p className='description'>{values.weather[0].description}</p>
+          <img className='icon' src={Icons(icon)} alt="icon-weather" />
+          <div className='card-footer'>
+            <p className='temp-max-min'>{values.main.temp_min.toFixed(0)}&deg;  |  {values.main.temp_max.toFixed(0)}&deg;</p>
+          </div>
+        </div>
+      ) : (
+        <h1>{"City not found"}</h1>
+      )}
+
+
+               
+               
+           
+    </div>
+    </div>
+
+    </>  
+  );
+}
+
+export default App
