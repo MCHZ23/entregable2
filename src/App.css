@@ -1,5 +1,5 @@
 body {
-    background-color: #d8e4ee;
+    background-color: #cadeee;
     text-align: center;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -18,15 +18,19 @@ body {
     box-sizing: border-box;
       max-width: 1040px;
       width: 100%;
-      margin: 0 auto;	
-      padding: 20px;  
+      margin: 165px auto;	
+      margin-top: -58px;
+      padding: 20px;
+      
   }
   .row {
     display: flex;
+    
   }
+  
   button{ 
-    height: 3em;
-    margin-top: 7em;
+    height: 2.8em;
+    margin-top: 7.3em;
     border-radius: 20px;
     border: none;
     width: 3em;
@@ -47,14 +51,26 @@ body {
   input:focus {
     outline: none;
   }
+  .unit-button{ 
+    background-color: #82a7ed;
+    margin-top: 25em;
+    font-size: 30px;
+    margin-left: 30px;
+  }
+  .containerdark-mode{ 
+    height: 15.4em;
+    margin: -2.4em;
+    max-width: 96%;
+    margin-left: 20px;
+  }
   .bx-search-alt-2{ 
     font-size: 23px;
     
   }
   .card {
-    margin-top: 20px;
-      display:flex;    
-      justify-content: center;
+    margin-top: 111px;
+    display: flex;
+    justify-content: center;
   }
   .card-container {
     margin:  20px 5px;
@@ -62,6 +78,7 @@ body {
     position: absolute;    
     width: 470px;
     height: 470px;
+    margin-left: 3em;
     background-color: #b7c0c8;    
     box-shadow: 0px 0px 25px 1px rgba(50, 50, 50, 0.1);       
   }
@@ -114,7 +131,7 @@ body {
   .dark-mode {
     background-color: #4f4c4c;
   color: #d5b6b6;
-    height: 77em;
+    
 }
   input[type="checkbox"]
   { 
@@ -132,8 +149,8 @@ body {
       border-radius: 20px;
       overflow: hidden;
       transition: ease-in 0.5s;
-      margin-left: 70em;
-      top: 34px;
+      margin-left: 160em;
+      top: 56px;
   }
   input[type="checkbox"]:checked ~ .slider-round
   { 

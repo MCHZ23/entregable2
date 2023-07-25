@@ -10,6 +10,8 @@ const api = {
 
 function App() {
   const [search, setSearch] = useState('roma')
+  const [searchInput, setSearchInput] = useState('');
+
   const [values, setValues] = useState({
 
   name: '',
@@ -44,7 +46,22 @@ function App() {
     }
    } 
 
-  
+   const [unitType, setUnitType] = useState('metric');
+
+   const toggleUnitType = () => {
+    setUnitType(prevUnitType => (prevUnitType === 'metric' ? 'imperial' : 'metric'));
+  };
+
+  useEffect(() => {
+    getData();
+  }, [search, unitType]);
+
+  const handleSearch = (e) => {
+    setSearchInput(e.target.value);
+    if (e.key === 'Enter') {
+      setSearch(e.target.value);
+    }
+  };
 
   const getData = async () => {
     const URL = `${api.base}weather?q=${search}&units=metric&appid=${api.key}`;
@@ -64,62 +81,67 @@ function App() {
       })
   }
 
-  const handleSearch = (e) => {
-    if(e.key === 'Enter'){      
-      setSearch(e.target.value)
-    }
-  }
+  
   useEffect(()=>{
     getData()
-  },[search]) // eslint-disable-line react-hooks/exhaustive-deps
+  },[search]) 
 
   return (
     <>
-    <div className="container">
-    <div className={`container${darkMode ? "dark-mode" : ""}`}>
+      <div>
+      <label className="switch">
+              <input
+                 type="checkbox"
+                 checked={darkMode}
+                 onChange={toggleDarkMode}
+              />
+            <span className="slider-round"></span>
+            </label>
+
+        <div className="container">
+          <div className={`container${darkMode ? "dark-mode" : ""}`}>
      
-     <label className="switch">
-      <input
-        type="checkbox"
-        checked={darkMode}
-        onChange={toggleDarkMode}
-      />
-      <span className="slider-round"></span>
-    </label>
-    
-      <h2>React Weather App</h2>
-      <div className='row'>
-        <input 
-          onKeyDown={handleSearch}
-          type="text"          
-          autoFocus
-        />
-        <button  className='touchpad'  onClick={ searchPressed}> <i className='bx bx-search-alt-2' ></i></button> 
-      </div>
-    </div>
-
-    <div className='card'>
-      {(values.name) ? (
-        <div className='card-container'>
-          <h1 className='city-name'>{values.name}, {values.sys.country}</h1>
-          <p className='temp'>{values.main.temp.toFixed(0)}&deg;</p>
-          <p className='description'>{values.weather[0].description}</p>
-          <img className='icon' src={Icons(icon)} alt="icon-weather" />
-          <div className='card-footer'>
-            <p className='temp-max-min'>{values.main.temp_min.toFixed(0)}&deg;  |  {values.main.temp_max.toFixed(0)}&deg;</p>
-          </div>
-        </div>
-      ) : (
-        <h1>{"City not found"}</h1>
-      )}
-
-
-               
-               
            
-    </div>
-    </div>
 
+               <h2>React Weather App</h2>
+
+            <div className='row'>
+               <input className="text"
+              value={searchInput} 
+              onKeyDown={handleSearch}
+              onChange={handleSearch} 
+              type="text"          
+                   
+               />
+               <button  className='touchpad'  onClick={ searchPressed}> <i className='bx bx-search-alt-2'    ></i></button> 
+
+              
+            </div>
+          </div>
+
+          <div className='card'>
+              {(values.name) ? (
+              <div className='card-container'>
+                <h1 className='city-name'>{values.name}, {values.sys.country}</h1>
+                <p className='temp'>{values.main.temp.toFixed(0)}&deg;</p>
+                <p className='description'>{values.weather[0].description}</p>
+                <img className='icon' src={Icons(icon)} alt="icon-weather" />
+                
+                <div className='card-footer'>
+                  <p className='temp-max-min'>{values.main.temp_min.toFixed(0)}&deg;  |  {values.main.temp_max.toFixed(0)}&deg;</p>
+                </div>
+              </div>
+
+              
+                 ) : (
+                     <h1>{"City not found"}</h1>
+                 )}         
+            </div>
+            <button className="unit-button" onClick={toggleUnitType}>
+                {unitType === 'metric' ? 'ºC' : 'ºF'}
+              </button>
+          </div>
+      </div>
     </>  
   );
 }
